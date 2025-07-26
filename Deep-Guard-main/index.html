@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGuard 🛡️| AI-Powered Deepfake Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(-45deg, #3b82f6, #8b5cf6, #ec4899, #f43f5e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        
+        .upload-box {
+            transition: all 0.3s ease;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+        
+        .upload-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .result-card {
+            transition: all 0.3s ease;
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        
+        .result-card.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .progress-bar {
+            transition: width 1.5s ease-in-out;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg text-white font-sans">
+    <div class="container mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="flex flex-col items-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-center">
+                <span class="inline-block">Deep</span>
+                <span class="inline-block text-blue-200">Guard</span>
+            </h1>
+            <p class="text-lg text-blue-100 max-w-2xl text-center">
+                Advanced AI detection for deepfakes and manipulated media
+            </p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex flex-col items-center">
+            <!-- Upload Section -->
+            <div id="uploadSection" class="w-full max-w-3xl bg-white/10 backdrop-blur-sm rounded-xl p-8 upload-box mb-12">
+                <div class="flex flex-col items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <h2 class="text-2xl font-semibold mb-2">Upload Media for Analysis</h2>
+                    <p class="text-blue-100 mb-6 text-center">Detect deepfakes in images, videos, or audio files</p>
+                    
+                    <label for="fileUpload" class="cursor-pointer bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg font-medium transition-colors mb-4">
+                        Select File
+                    </label>
+                    <input id="fileUpload" type="file" class="hidden" accept="image/*,video/*,audio/*">
+                    <p class="text-sm text-blue-100/80">Supports: JPG, PNG, MP4, MOV, WAV, MP3</p>
+                </div>
+            </div>
+
+            <!-- Processing Section (Hidden by default) -->
+            <div id="processingSection" class="w-full max-w-3xl hidden">
+                <div class="flex flex-col items-center">
+                    <div class="relative mb-8">
+                        <div class="h-32 w-32 rounded-full bg-white/10 flex items-center justify-center pulse">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h2 class="text-2xl font-semibold mb-4">Analyzing Media</h2>
+                    
+                    <div class="w-full bg-white/20 rounded-full h-2.5 mb-6">
+                        <div id="progressBar" class="progress-bar bg-blue-200 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 text-center mb-8">
+                        <div class="bg-white/10 p-4 rounded-lg">
+                            <div class="text-sm text-blue-100 mb-1">Face Analysis</div>
+                            <div class="text-xl font-bold">Processing</div>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-lg">
+                            <div class="text-sm text-blue-100 mb-1">Audio Patterns</div>
+                            <div class="text-xl font-bold">Processing</div>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-lg">
+                            <div class="text-sm text-blue-100 mb-1">Artifact Detection</div>
+                            <div class="text-xl font-bold">Processing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section (Hidden by default) -->
+            <div id="resultsSection" class="w-full max-w-4xl hidden">
+                <div class="flex flex-col items-center mb-8">
+                    <h2 class="text-2xl font-semibold mb-6">Analysis Results</h2>
+                    
+                    <div class="w-full flex flex-col md:flex-row gap-6 mb-8">
+                        <!-- Media Preview -->
+                        <div class="flex-1 bg-white/10 rounded-xl overflow-hidden">
+                            <div class="aspect-w-16 aspect-h-9 bg-black/20 flex items-center justify-center">
+                                <img id="mediaPreview" src="" alt="Uploaded media" class="object-cover w-full h-full hidden">
+                                <div class="text-blue-100 p-8 text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <p>Media preview will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Results Summary -->
+                        <div class="flex-1">
+                            <div class="bg-white/10 rounded-xl p-6 h-full">
+                                <h3 class="text-xl font-semibold mb-4">Detection Summary</h3>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+<script>
+const fileInput = document.getElementById('fileUpload');
+const processingSection = document.getElementById('processingSection');
+const resultsSection = document.getElementById('resultsSection');
+const progressBar = document.getElementById('progressBar');
+const mediaPreview = document.getElementById('mediaPreview');
+
+fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    // Show processing UI
+    processingSection.classList.remove('hidden');
+    resultsSection.classList.add('hidden');
+    progressBar.style.width = '50%';
+
+    // Set up media preview
+    const fileURL = URL.createObjectURL(file);
+    mediaPreview.src = fileURL;
+    mediaPreview.classList.remove('hidden');
+
+    // Send file to backend
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch('http://localhost:5001/detect', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        // Show results
+        processingSection.classList.add('hidden');
+        resultsSection.classList.remove('hidden');
+        progressBar.style.width = '100%';
+
+        // Display results
+        document.querySelector('.space-y-4').innerHTML = `
+            <p><strong>Type:</strong> ${result.type}</p>
+            <p><strong>Is Deepfake:</strong> ${result.is_deepfake ? 'Yes 😱' : 'No ✅'}</p>
+            <p><strong>Confidence:</strong> ${(result.confidence * 100).toFixed(2)}%</p>
+            <p><strong>Frames Analyzed:</strong> ${result.frames_analyzed}</p>
+            <p class="text-blue-200 mt-4">${result.message}</p>
+        `;
+    } catch (err) {
+        alert("Upload failed: " + err.message);
+        processingSection.classList.add('hidden');
+    }
+});
+</script>
+</body>
+</html>
